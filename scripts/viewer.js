@@ -98,7 +98,7 @@ var ReadKdbxHeader = (function (){
 	var readFieldData = function (that,result){
 		//console.log("field data")
 		that.header[that._ID] = result;
-		var data = new Uint8Array(result);
+		//var data = new Uint8Array(result);
 		//console.log(array2hex(data));
 		var reader = new FileReader();
 		reader.onload = function () {
