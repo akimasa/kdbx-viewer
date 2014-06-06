@@ -32,7 +32,7 @@ function btn_openfile_clicked() {
 
 
 }
-ReadKdbxHeader = (function (){
+var ReadKdbxHeader = (function (){
 	var KdbxHeaderFieldID =
 	{
 		"EndOfHeader" : 0,
