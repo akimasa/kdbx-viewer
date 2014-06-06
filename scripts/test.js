@@ -12,8 +12,6 @@ var file_changed = function () {
 		it("reads file", function(done) {
 			read_file(that.files[0],function(key,kdbxHeader){
 
-				//if(array2hex(key) == "a257da8f5d5d1b8f0b4dd1ad909d579b8afaf0c73183e27f68d7da205678198b")
-				//done();
 				read_file_contents(key,kdbxHeader,function(a){
 					if(a)
 					done();
@@ -68,14 +66,3 @@ describe("Credentials", function() {
 		});
 	});
 });
-/*
-var buffer = new ArrayBuffer(4);
-buffer32View = new Uint32Array(buffer);
-buffer8View = new Uint8Array(buffer);
-//crypto.getRandomValues(buffer32View);
-buffer32View[0] = Math.pow(2,31)-1;
-console.log(buffer32View);
-console.log(buffer8View);
-console.log(buffer8View[0]|(buffer8View[1]<<8)|(buffer8View[2]<<16)|(buffer8View[3]<<24));
-
-*/
