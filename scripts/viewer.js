@@ -25,10 +25,10 @@ function btn_openfile_clicked() {
 	var request = storage.get(filename);
 	request.onsuccess = function () {
 		read_file(this.result,function(){});
-	}
+	};
 	request.onerror = function () {
 		alert("Unable to get the file:" + this.error.name);
-	}
+	};
 
 
 }
@@ -151,7 +151,7 @@ function read_file_contents(key,kdbxHeader,callback){
 			//console.log("import key");
 			var aesAlgorithmDecrypt = {
 				name: "AES-CBC",
-		       iv: kdbxHeader.getHeader('EncryptionIV')
+				iv: kdbxHeader.getHeader('EncryptionIV')
 			};
 
 			var decryptOp = crypto.subtle.decrypt(aesAlgorithmDecrypt, importedKey, data);
@@ -262,8 +262,8 @@ function myECB(key,data,cb){
 			length += arr[i].length;
 		}
 		//console.log(length);
-		var concated = new Uint8Array(length)
-		for(var i=0;i<arr.length;i++){
+		var concated = new Uint8Array(length);
+		for(i=0;i<arr.length;i++){
 			concated.set(arr[i],offset);
 			offset += arr[i].length;
 		}
@@ -287,7 +287,7 @@ function blockECB(key, data) {
 	}).then(function (cipherText) {
 		return new Promise(
 			function (resolve, reject) {
-				resolve(cipherText.subarray(0, 16))
+				resolve(cipherText.subarray(0, 16));
 			});
 	});
 }
