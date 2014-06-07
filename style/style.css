@@ -1,3 +1,16 @@
 #file-content {
 	width:100%;
 }
+.group {
+	margin-left:2em;
+}
+.group .name {
+	font-weight: bold;
+	font-size: 200%;
+}
+.entry {
+	margin: 2em;
+	padding: 3px;
+	border: 1px black solid;
+	
+}

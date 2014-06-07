@@ -424,7 +424,96 @@ function process_kdbxContent(kdbxHeader,kdbxContent){
 			catch (e) {
 				console.log( 'Error: Document tree modified during iteraton ' + e );
 			}
+			var root = kdbxContent.getElementsByTagName("Root")[0];
+			var pkf = new ProcessKdbxFile();
+			var html = pkf.recursiveGroup(root);
+			document.getElementById("file-view").appendChild(html);
 			$("#file-content").val((new XMLSerializer()).serializeToString(kdbxContent));
 		});
 }
+var ProcessKdbxFile = (function() {
+	var ProcessKdbxFile = function () {
+		this.recursiveLevel = 0;
+	};
+	var processStrings = function (element){
+		var elements = element.getElementsByTagName("String");
+		var returnElement = document.createElement("div");
+		for(var i=0; i < elements.length; i++){
+			var current = elements[i];
+			var key = current.getElementsByTagName("Key")[0].textContent;
+			var value = current.getElementsByTagName("Value")[0].textContent;
+			var dl = document.createElement("dl");
+			var dt = document.createElement("dt");
+			var dd = document.createElement("dd");
+			dt.appendChild(document.createTextNode(key));
+			dd.appendChild(document.createTextNode(value));
+			dl.appendChild(dt);
+			dl.appendChild(dd);
+			returnElement.appendChild(dl);
+		}
+		return returnElement;
+	};
+	var processEntry = function (element){
+		var returnElement = document.createElement("div");
+		returnElement.className = "entry";
+		//var tmp = element.getElementsByTagName("UUID")[0].textContent;
+		//var tmpEle = document.createElement("span");
+		//tmpEle.appendChild(document.createTextNode(tmp));
+		//returnElement.appendChild(tmpEle);
+		returnElement.appendChild(processStrings(element));
+		return returnElement;
+	}
+	var processEntrys = function (element){
+		var elements = element.getElementsByTagName("Entry");
+		var returnElement = document.createElement("div");
+		returnElement.className = "entrys";
+		var tmp = element.getElementsByTagName("Name")[0].textContent;
+		var tmpEle = document.createElement("div");
+		tmpEle.className = "name";
+		tmpEle.appendChild(document.createTextNode(tmp));
+		if(this.recursiveLevel > 0){
+			tmpEle.addEventListener("click", function(){
+				$(this).siblings(".entry").slideToggle("fast");
+			});
+		}
+		returnElement.appendChild(tmpEle);
+		for(var i=0; i < elements.length; i++){
+			var current = elements[i];
+			var entry = processEntry(current);
+			returnElement.appendChild(entry);
+		}
+		return returnElement;
+	};
+	var recursiveGroup = function (element){
+		var elements = element.children;
+		var returnElement = document.createElement("div");
+		returnElement.className = "group";
+
+		for(var i=0; i < elements.length; i++){
+			var current = elements[i];
+			if(current.tagName != "Group"){
+				continue;
+			}
+			console.group();
+			this.recursiveLevel++;
+
+			var UUID = current.getElementsByTagName("UUID")[0].textContent;
+			console.log(UUID);
+			var entry = processEntrys.call(this,current);
+			returnElement.appendChild(entry);
+
+			var group = recursiveGroup.call(this,current);
+			returnElement.appendChild(group);
+
+			console.groupEnd();
+			this.recursiveLevel--;
+		}
+		return returnElement;
+	};
+	ProcessKdbxFile.prototype = {
+		constructor : ProcessKdbxFile,
+		recursiveGroup : recursiveGroup
+	};
+	return ProcessKdbxFile;
+})();
 storage_enum_file();
