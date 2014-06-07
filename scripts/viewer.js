@@ -279,7 +279,7 @@ function blockECB(key, data) {
 
 		var aesAlgorithmEncrypt = {
 			name: "AES-CBC",
-			iv: new Uint8Array(Array(32))
+			iv: new Uint8Array(Array(16))
 		};
 
 		var encryptOp = crypto.subtle.encrypt(aesAlgorithmEncrypt, digestKey, data);
