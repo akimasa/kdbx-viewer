@@ -151,12 +151,13 @@ function read_file_contents(key,kdbxHeader,callback){
 			//console.log("import key");
 			var aesAlgorithmDecrypt = {
 				name: "AES-CBC",
-				iv: kdbxHeader.getHeader('EncryptionIV')
+				iv: new Uint8Array(kdbxHeader.getHeader('EncryptionIV'))
 			};
 
 			var decryptOp = crypto.subtle.decrypt(aesAlgorithmDecrypt, importedKey, data);
 			return decryptOp;
 		}).then(function(plainText){
+			plainText = new Uint8Array(plainText);
 			var offset = 0;
 			var startBytes = kdbxHeader.getHeader("StreamStartBytes");
 			startBytes = new Uint8Array(startBytes);
@@ -174,6 +175,7 @@ function read_file_contents(key,kdbxHeader,callback){
 			length = Uint8x4_to_Uint32(length);
 			//TODO: implement https://github.com/NeoXiD/keepass.io/blob/master/lib/hbio.js
 			crypto.subtle.digest({ name: "SHA-256" }, plainText.subarray(offset,offset+length)).then(function(digest){
+				digest = new Uint8Array(digest);
 				var kdbxContentSubarray = plainText.subarray(offset,offset+length);
 				var kdbxContent,kdbxContentStr;
 				if(array2hex(digest) == array2hex(hash)){
@@ -230,6 +232,7 @@ function read_file(file,callback){
 							c.set(result, masterseed.length);
 							result = c;
 							crypto.subtle.digest({ name: "SHA-256" }, new Uint8Array(result)).then(function(masterKey){
+								masterKey = new Uint8Array(masterKey);
 								callback(masterKey,a);
 							});
 
@@ -287,6 +290,7 @@ function blockECB(key, data) {
 	}).then(function (cipherText) {
 		return new Promise(
 			function (resolve, reject) {
+				cipherText = new Uint8Array(cipherText);
 				resolve(cipherText.subarray(0, 16));
 			});
 	});
@@ -307,6 +311,7 @@ var TransformKey = (function() {
 	var finalRound = function(result){
 		var that = this;
 		crypto.subtle.digest({ name: "SHA-256" }, result).then(function(digest){
+			digest = new Uint8Array(digest);
 			that.onfinal(digest);
 		});
 
@@ -357,7 +362,10 @@ var Credentials = (function() {
 	var genCompositeHash = function (callback){
 		addPassword.call(this).then(function(digest){
 			return crypto.subtle.digest({ name: "SHA-256" }, new Uint8Array(digest));
-		}).then(callback);
+		}).then(function(hash){
+			hash = new Uint8Array(hash);
+			callback(hash);
+		});
 	};
 	var addPassword = function (){
 		return crypto.subtle.digest({ name: "SHA-256" }, new Uint8Array(str2ab(this.password)));
@@ -389,6 +397,7 @@ var Unprotect = (function() {
 	var setSalsa = function (key,cb){
 		var that = this;
 		crypto.subtle.digest({ name: "SHA-256" }, key).then(function(digest){
+			digest = new Uint8Array(digest);
 			array2hexp(digest);
 			that.salsa20 = new Salsa20(digest,SALSA_IV);
 			cb();
