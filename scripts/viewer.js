@@ -220,10 +220,9 @@ function read_file(file,callback){
 						//tk.rounds = 10;
 						tk.seed = new Uint8Array(a.getHeader("TransformSeed"));
 						tk.key = compositeHash;
-						var start = (new Date()).getTime();
+						console.time("Transform Key");
 						tk.onfinal = function (result) {
-							var end = (new Date()).getTime();
-							console.log(end-start+"[ms] to transform key");
+							console.timeEnd("Transform Key");
 							var masterseed = new Uint8Array(a.getHeader("MasterSeed"));
 							var c = new Uint8Array(masterseed.length + result.length);
 							c.set(masterseed);
